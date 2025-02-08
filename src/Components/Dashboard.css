@@ -1,0 +1,98 @@
+/* Dashboard.css - Dark Mode Theme With Padding */
+
+/* Overall container */
+.dashboard-container {
+    background: #1E1E2F; /* Deep dark blue-gray */
+    color: #EEEEEE; /* Light text for contrast */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+  }
+  
+  /* Header styling */
+  .dashboard-header {
+    background: #2D2D44; /* Slightly lighter dark for header */
+    color: #EEEEEE;
+    border-radius: 8px;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .dashboard-header h1 {
+    margin: 0;
+    font-size: 2.2em;
+  }
+  
+  .dashboard-header p {
+    margin: 5px 0 0;
+    font-size: 1.2em;
+  }
+  
+  /* Container for chart and summary */
+  .chart-summary-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px; /* Space between the chart and summary sections */
+    margin-top: 20px;
+  }
+  
+  /* Chart section styling */
+  .chart-section {
+    flex: 2;
+    background: #2D2D44;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+  }
+  
+  /* Summary section styling */
+  .summary-section {
+    flex: 1;
+    background: #2D2D44;
+    border-left: 6px solid #00ADB5; /* Vibrant accent */
+    border-radius: 4px;
+    font-size: 1.1em;
+    color: #EEEEEE;
+    padding: 20px;
+  }
+  
+  .summary-section h2 {
+    margin-top: 0;
+    color: #00ADB5;
+  }
+  
+  /* Table section styling */
+  .table-section {
+    margin-top: 20px;
+    background: #2D2D44;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+  }
+  
+  .table-section h2 {
+    color: #00ADB5;
+    margin-top: 0;
+  }
+  
+  /* Table styling */
+  .recommendations-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .recommendations-table th,
+  .recommendations-table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #444;
+  }
+  
+  .recommendations-table th {
+    background: #00ADB5;
+    color: #EEEEEE;
+  }
+  
+  .recommendations-table tr:hover {
+    background: #3A3A55;
+  }
+  
