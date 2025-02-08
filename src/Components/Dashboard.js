@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import './Dashboard.css';
 import {
@@ -11,6 +11,8 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import annotationPlugin from 'chartjs-plugin-annotation';  // Import annotation plugin
+import { color } from 'chart.js/helpers';
 
 ChartJS.register(
   CategoryScale,
@@ -19,37 +21,37 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  annotationPlugin  // Register the annotation plugin
 );
 
 const Dashboard = () => {
-  const fakeData = {
-    predicted_prices: [50.5, 52.3, 53.1, 55.0, 54.2, 53.8, 52.7],
-    action_recommendations: ['Hold', 'Sell', 'Buy', 'Hold', 'Sell', 'Hold', 'Buy'],
-    timestamps: [
-      '2025-02-08T00:00:00Z',
-      '2025-02-09T00:00:00Z',
-      '2025-02-10T00:00:00Z',
-      '2025-02-11T00:00:00Z',
-      '2025-02-12T00:00:00Z',
-      '2025-02-13T00:00:00Z',
-      '2025-02-14T00:00:00Z',
-    ],
-    summary_message:
-      "Forecast indicates a significant increase in energy prices next week due to rising demand. It is recommended that you increase energy storage now to capitalize on the higher prices.",
-  };
+  const [data, setData] = useState(null);  // State to store fetched data
 
-  // Prepare data for the chart using daily labels
+  useEffect(() => {
+    // Fetch data from the API
+    fetch('http://localhost:5000/api/get_predictions')
+      .then((response) => response.json())
+      .then((data) => {
+        setData(data);
+        console.log(data.entries);
+      }) // Set data once fetched
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
+
+  if (!data) {
+    return <div>Loading...</div>;  // Render loading state until data is fetched
+  }
+
+  // Prepare data for the chart using day indices as labels
   const chartData = {
-    labels: fakeData.timestamps.map((ts) =>
-      new Date(ts).toLocaleDateString([], { month: 'short', day: 'numeric' })
-    ),
+    labels: data.entries.map((entry, index) => index),  // Using index (0, 1, 2, ...) as day labels
     datasets: [
       {
-        label: 'Predicted Price ($/MWh)',
-        data: fakeData.predicted_prices,
+        label: 'Price (Cents/MWh)',
+        data: data.entries.map((entry) => entry.Price),  // Assuming Price is always available
         fill: false,
-        borderColor: '#00ADB5', // Accent color for the line
+        borderColor: '#00ADB5',  // Accent color for the Price line
         tension: 0.3,
       },
     ],
@@ -58,9 +60,44 @@ const Dashboard = () => {
   const chartOptions = {
     plugins: {
       legend: { display: false },
+      annotation: {
+        annotations: {
+          line1: {
+            type: 'line',
+            yMin: 140,  // y-coordinate of the line
+            yMax: 140,  // y-coordinate of the line
+            borderColor: 'red',  // Line color
+            borderWidth: 2,  // Line thickness
+            borderDash: [5, 5],  // Dotted line (5px dash, 5px space)
+            label: {
+              content: 'y = 140',
+              enabled: true,
+              position: 'center',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            },
+          },
+          verticalLine: {
+            type: 'line',
+            xMin: 5.55,  // x position of the line (at day 5.5)
+            xMax: 5.55,  // x position of the line (at day 5.5)
+            borderColor: 'red',  // Line color
+            borderWidth: 2,  // Line thickness
+            borderDash: [5, 5],  // Dotted line (5px dash, 5px space)
+            label: {
+              content: 'Day 5.55',
+              enabled: true,
+              position: 'top',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            },
+          },
+        },
+      },
     },
     scales: {
-      x: { grid: { display: false, color: '#444' } },
+      x: {
+        type: 'linear',  // Use linear scale for x-axis (0, 1, 2, ...)
+        grid: { display: false, color: '#444' },
+      },
       y: { grid: { display: true, color: '#444' } },
     },
   };
@@ -77,38 +114,23 @@ const Dashboard = () => {
         <section className="chart-section">
           <Line data={chartData} options={chartOptions} />
         </section>
-        
+
         <section className="summary-section">
-          <h2>Market Forecast Summary</h2>
-          <p>{fakeData.summary_message}</p>
+          <h2 style={{ fontSize: "30pt" }} className="friendly-text">Market Forecast Summary</h2>
+          <p style={{ color: "red", fontSize: "28pt" }}  className="friendly-text">Sell on day 5</p>
         </section>
       </div>
-      
+
       {/* Action Recommendations Table */}
-      <section className="table-section">
-        <h2>Action Recommendations</h2>
-        <table className="recommendations-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Recommendation</th>
-            </tr>
-          </thead>
-          <tbody>
-            {fakeData.timestamps.map((ts, index) => (
-              <tr key={index}>
-                <td>
-                  {new Date(ts).toLocaleDateString([], {
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </td>
-                <td>{fakeData.action_recommendations[index]}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+
+      {/* Footer Section */}
+      <footer className="dashboard-footer" style={{ textAlign: 'center', marginTop: '30px', padding: '20px' }}>
+        <p>Dashboard Created By:</p>
+        <p>Chris Singer, Noah Choi, Jacky Huang, Shreyas Nanjanagud</p>
+      </footer> 
+      <h1>
+        WeatherWise
+      </h1>
     </div>
   );
 };
